@@ -10,7 +10,6 @@ public enum StatusTextField {
     case none
 }
 
-
 public class FloatingLabelTextField: UITextField{
     
     private var statusTextField: StatusTextField = .editingDidEnd
@@ -21,30 +20,7 @@ public class FloatingLabelTextField: UITextField{
     public var didEditingDidBegin: (() -> ())?
     
     public var getEventTextField: ((_ event: StatusTextField) -> ())?
-    
-    // MARK: - Handle title color
-    public var titleName: String = "" {
-        didSet {
-            if isRequired {
-                let last = " *"
-                let fullText = titleName + last
-                let rangesAndColors: [(NSRange, UIColor)] = [
-                    (NSRange(location: 0, length: titleName.count), .black),
-                    (NSRange(location: titleName.count, length: 2), .red),
-                ]
-                labelTitle.setAttributedTextWithColors(text: fullText,
-                                                       rangesAndColors: rangesAndColors)
-            } else {
-                labelTitle.text = titleName
-            }
-        }
-    }
-    
-    public var titleColor: UIColor = .black {
-        didSet {
-            labelTitle.textColor = titleColor
-        }
-    }
+
     
     public var isValidate: Bool = false {
         didSet {
@@ -149,6 +125,30 @@ public class FloatingLabelTextField: UITextField{
 // MARK: - Handle TextField element change
 extension FloatingLabelTextField {
     
+    public func setTilteName(titleName: String,
+                             titleColor: UIColor? = .black,
+                             font: UIFont? = UIFont.systemFont(ofSize: 14, weight: .bold) ,
+                             isStar: Bool? = false,
+                             starColor: UIColor? = .red) {
+        
+        labelTitle.text = titleName
+        labelTitle.font = font
+        labelTitle.textColor = titleColor
+        
+        if isStar!{
+            
+            let fullText = titleName + " *"
+            
+            let rangesAndColors: [(NSRange, UIColor)] = [
+                (NSRange(location: 0, length: titleName.count), titleColor!),
+                (NSRange(location: titleName.count, length: 2), starColor!),
+            ]
+            labelTitle.setAttributedTextWithColors(text: fullText, rangesAndColors: rangesAndColors)
+        }
+        
+    }
+    
+    
     public func setCornerRadius(cornerRadius: CGFloat = 5) {
         viewBorder.layer.cornerRadius = cornerRadius
     }
@@ -211,7 +211,7 @@ extension FloatingLabelTextField {
     @objc private func editingDidBegin() {
         setBorderColorSelected()
         getEventTextField?(.editingDidBegin)
-       
+        
         
         statusTextField = .editingDidBegin
         stackWorning.isHidden = true
@@ -231,7 +231,7 @@ extension FloatingLabelTextField {
     @objc private func editingDidEnd() {
         setBorderColorEndEditChange()
         getEventTextField?(.editingDidEnd)
-       
+        
         
         isEditingDidBegin = false
         
@@ -254,6 +254,26 @@ extension FloatingLabelTextField {
 
 // MARK: - Setup layoutConstraint
 extension FloatingLabelTextField {
+    
+    
+    // Handle title name
+    //    private func setupTitleName(){
+    
+    //        if isRequired {
+    //            let last = " *"
+    //            let fullText = titleName + last
+    //            let rangesAndColors: [(NSRange, UIColor)] = [
+    //                (NSRange(location: 0, length: titleName.count), titleNameColor),
+    //                (NSRange(location: titleName.count, length: 2), starColor),
+    //            ]
+    //            labelTitle.setAttributedTextWithColors(text: fullText,
+    //                                                   rangesAndColors: rangesAndColors)
+    //        } else {
+    //            labelTitle.text = titleName
+    //        }
+    //
+    //    }
+    
     
     private func setupUI() {
         let fullView = UIView(frame: self.bounds)
@@ -299,25 +319,3 @@ extension FloatingLabelTextField {
         addTarget(self, action: #selector(editingChanged), for: .editingChanged)
     }
 }
-
-// MARK: - Handle Array FloatingLabelTextField
-//extension UIView {
-//    
-//    public func arrayTextFieldsResignFirstResponder(textFields: [FloatingLabelTextField]) {
-//        textFields.forEach { $0.resignFirstResponder() }
-//    }
-//    
-//    public func isValidateTextField(textFields: [FloatingLabelTextField],
-//                                    success: @escaping (_ success: FloatingLabelTextField) -> (),
-//                                    failure: @escaping (_ failure: FloatingLabelTextField) -> ()) {
-//        textFields.forEach { item in
-//            if (item.text == "" || item.text == "  ") && !item.isOptionalField {
-//                item.isValidate = false
-//                failure(item)
-//            } else {
-//                success(item)
-//                item.isValidate = true
-//            }
-//        }
-//    }
-//}

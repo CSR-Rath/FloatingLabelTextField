@@ -10,11 +10,11 @@ import UIKit
 // MARK: - Handle Array FloatingLabelTextField
 public extension UIView {
     
-    public func arrayTextFieldsResignFirstResponder(textFields: [FloatingLabelTextField]) {
+    func arrayTextFieldsResignFirstResponder(textFields: [FloatingLabelTextField]) {
         textFields.forEach { $0.resignFirstResponder() }
     }
     
-    public func isValidateTextField(textFields: [FloatingLabelTextField],
+    func isValidateTextField(textFields: [FloatingLabelTextField],
                                     success: @escaping (_ success: FloatingLabelTextField) -> (),
                                     failure: @escaping (_ failure: FloatingLabelTextField) -> ()) {
         textFields.forEach { item in
