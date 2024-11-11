@@ -12,33 +12,15 @@ public enum StatusTextField {
 
 public class FloatingLabelTextField: UITextField{
     
-    private var statusTextField: StatusTextField = .editingDidEnd
+//    private var statusTextField: StatusTextField = .editingDidEnd
     private var isEditingDidBegin: Bool = false
-    private var isRequired: Bool = false
+//    private var isRequired: Bool = false
     
     public var isOptionalField: Bool = false
     public var didEditingDidBegin: (() -> ())?
     
     public var getEventTextField: ((_ event: StatusTextField) -> ())?
 
-    
-    public var isValidate: Bool = false {
-        didSet {
-            if isValidate {
-                if statusTextField == .editingDidBegin {
-                    viewBorder.layer.borderColor = UIColor.orange.cgColor
-                } else if statusTextField == .editingChanged {
-                    viewBorder.layer.borderColor = UIColor.blue.cgColor
-                } else if statusTextField == .editingDidEnd {
-                    viewBorder.layer.borderColor = UIColor.orange.cgColor
-                }
-            } else {
-                viewBorder.layer.borderColor = UIColor.red.cgColor
-            }
-            
-            stackWorning.isHidden = isValidate
-        }
-    }
     
     override public var backgroundColor: UIColor? {
         didSet {
@@ -50,7 +32,6 @@ public class FloatingLabelTextField: UITextField{
         let label = SSPaddingLabel()
         label.textColor = .black
         label.backgroundColor = .white
-        label.text = "_"
         label.padding = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 4)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -78,7 +59,7 @@ public class FloatingLabelTextField: UITextField{
         return label
     }()
     
-    private let stackWorning: UIStackView = {
+    private let stackWarning: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [])
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
@@ -99,7 +80,7 @@ public class FloatingLabelTextField: UITextField{
     override public func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if text == "" && isEditingDidBegin == false {
             UIView.animate(withDuration: 0.2) { [self] in
-                labelTitle.alpha = 0.5
+                labelTitle.alpha = 0.0
                 iconRightImg.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
             } completion: { [self] _ in
                 labelTitle.alpha = 1
@@ -114,7 +95,7 @@ public class FloatingLabelTextField: UITextField{
         super.init(frame: frame)
         setupUI()
         setCornerRadius()
-        setBorderColorDefault()
+        setBorderColor(borderColor: .lightGray, borderWidth: 1.5)
     }
     
     required public init?(coder: NSCoder) {
@@ -153,33 +134,16 @@ extension FloatingLabelTextField {
         viewBorder.layer.cornerRadius = cornerRadius
     }
     
-    public func setBorderColorDefault(borderColor: UIColor = .lightGray,
-                                      borderWidth: CGFloat = 1.5) {
+    public func setBorderColor(borderColor: UIColor, borderWidth: CGFloat){
         viewBorder.layer.borderColor = borderColor.cgColor
         viewBorder.layer.borderWidth = borderWidth
     }
+
     
-    public func setBorderColorSelected(borderColor: UIColor = .blue,
-                                       borderWidth: CGFloat = 2) {
-        viewBorder.layer.borderColor = borderColor.cgColor
-        viewBorder.layer.borderWidth = borderWidth
+    public func isShowWarning(status: Bool){
+        stackWarning.isHidden = status
     }
     
-    public func setBorderColorEditChange(borderColor: UIColor = .blue,
-                                         borderWidth: CGFloat = 2) {
-        viewBorder.layer.borderColor = borderColor.cgColor
-        viewBorder.layer.borderWidth = borderWidth
-    }
-    
-    public func setBorderColorEndEditChange(borderColor: UIColor = .lightGray,
-                                            borderWidth: CGFloat = 1.5) {
-        viewBorder.layer.borderColor = borderColor.cgColor
-        viewBorder.layer.borderWidth = borderWidth
-    }
-    
-    public func isRequiredStar() {
-        isRequired = true
-    }
     
     public func isOptionalTextField() {
         isOptionalField = true
@@ -188,7 +152,8 @@ extension FloatingLabelTextField {
     public func setIconWarning(icon: UIImage,
                                text: String,
                                textColor: UIColor,
-                               font: UIFont = UIFont.systemFont(ofSize: 14, weight: .regular)) {
+                               font: UIFont = UIFont.systemFont(ofSize: 14, weight: .regular)
+    ) {
         iconWarning.image = icon
         labelWarning.text = text
         labelWarning.textColor = textColor
@@ -209,33 +174,22 @@ extension FloatingLabelTextField {
 extension FloatingLabelTextField {
     
     @objc private func editingDidBegin() {
-        setBorderColorSelected()
+    
+      
+        isEditingDidBegin = true // for alpa
         getEventTextField?(.editingDidBegin)
-        
-        
-        statusTextField = .editingDidBegin
-        stackWorning.isHidden = true
-        isEditingDidBegin = true
-        
-        animateFloatingLabel(to: 1)
+        animateFloatingLabel(to: 1)// animate label
     }
     
     @objc private func editingChanged() {
-        setBorderColorEditChange()
         getEventTextField?(.editingChanged)
-        
-        
-        statusTextField = .editingChanged
     }
     
     @objc private func editingDidEnd() {
-        setBorderColorEndEditChange()
+        
         getEventTextField?(.editingDidEnd)
         
-        
-        isEditingDidBegin = false
-        
-        statusTextField = .editingDidEnd
+        isEditingDidBegin = false // for alpa
         
         if text?.isEmpty == true {
             UIView.animate(withDuration: 0.2) {
@@ -255,27 +209,8 @@ extension FloatingLabelTextField {
 // MARK: - Setup layoutConstraint
 extension FloatingLabelTextField {
     
-    
-    // Handle title name
-    //    private func setupTitleName(){
-    
-    //        if isRequired {
-    //            let last = " *"
-    //            let fullText = titleName + last
-    //            let rangesAndColors: [(NSRange, UIColor)] = [
-    //                (NSRange(location: 0, length: titleName.count), titleNameColor),
-    //                (NSRange(location: titleName.count, length: 2), starColor),
-    //            ]
-    //            labelTitle.setAttributedTextWithColors(text: fullText,
-    //                                                   rangesAndColors: rangesAndColors)
-    //        } else {
-    //            labelTitle.text = titleName
-    //        }
-    //
-    //    }
-    
-    
     private func setupUI() {
+        
         let fullView = UIView(frame: self.bounds)
         fullView.backgroundColor = .orange.withAlphaComponent(0.1)
         addSubview(fullView)
@@ -286,11 +221,11 @@ extension FloatingLabelTextField {
         addSubview(viewBorder)
         addSubview(labelTitle)
         addSubview(iconRightImg)
-        addSubview(stackWorning)
+        addSubview(stackWarning)
         
-        stackWorning.addArrangedSubview(iconWarning)
-        stackWorning.addArrangedSubview(labelWarning)
-        stackWorning.backgroundColor = .cyan.withAlphaComponent(0.2)
+        stackWarning.addArrangedSubview(iconWarning)
+        stackWarning.addArrangedSubview(labelWarning)
+    
         
         NSLayoutConstraint.activate([
             labelTitle.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
@@ -301,9 +236,9 @@ extension FloatingLabelTextField {
             viewBorder.leadingAnchor.constraint(equalTo: leadingAnchor),
             viewBorder.trailingAnchor.constraint(equalTo: trailingAnchor),
             
-            stackWorning.topAnchor.constraint(equalTo: bottomAnchor,constant:  -10),
-            stackWorning.leftAnchor.constraint(equalTo: viewBorder.leftAnchor),
-            stackWorning.rightAnchor.constraint(equalTo: viewBorder.rightAnchor),
+            stackWarning.topAnchor.constraint(equalTo: bottomAnchor,constant:  -10),
+            stackWarning.leftAnchor.constraint(equalTo: viewBorder.leftAnchor),
+            stackWarning.rightAnchor.constraint(equalTo: viewBorder.rightAnchor),
             
             iconWarning.heightAnchor.constraint(equalToConstant: 20),
             iconWarning.widthAnchor.constraint(equalToConstant: 20),

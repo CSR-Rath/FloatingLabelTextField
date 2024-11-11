@@ -19,11 +19,11 @@ public extension UIView {
                                     failure: @escaping (_ failure: FloatingLabelTextField) -> ()) {
         textFields.forEach { item in
             if (item.text == "" || item.text == "  ") && !item.isOptionalField {
-                item.isValidate = false
+                item.isShowWarning(status: false)
                 failure(item)
             } else {
+                item.isShowWarning(status: true)
                 success(item)
-                item.isValidate = true
             }
         }
     }
