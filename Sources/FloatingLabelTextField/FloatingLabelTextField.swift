@@ -91,6 +91,16 @@ public class FloatingLabelTextField: UITextField{
         self.becomeFirstResponder()
     }
     
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if text != ""{
+            animateFloatingLabel(to: 1)// animate label
+        }
+        
+    }
+    
+    
     override public init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
